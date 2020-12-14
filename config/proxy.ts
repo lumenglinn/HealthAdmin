@@ -7,24 +7,24 @@
  */
 export default {
   dev: {
-    '/api/': {
-      target: 'https://preview.pro.ant.design',
+    '/api': {
+      target: 'http://120.76.100.17:8888',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
+      pathRewrite: { '/api': '' },
     },
   },
   test: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
+      target: 'http://hugong.chenshengbao.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
-  pre: {
-    '/api/': {
-      target: 'your pre url',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
-  },
+  // pre: {
+  //   '/api/': {
+  //     target: 'your pre url',
+  //     changeOrigin: true,
+  //     pathRewrite: { '^': '' },
+  //   },
+  // },
 };

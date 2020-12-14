@@ -6,70 +6,80 @@ import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
-import { TableListItem } from './data.d';
-import { queryRule, updateRule, addRule, removeRule } from './service';
+import { TableListItem } from './data';
+import { updateWorker, updateLineStatus, updateReviewed, queryList } from './service';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: TableListItem) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
+// const handleAdd = async (fields: TableListItem) => {
+//   const hide = message.loading('正在添加');
+//   try {
+//     await addRule({ ...fields });
+//     hide();
+//     message.success('添加成功');
+//     return true;
+//   } catch (error) {
+//     hide();
+//     message.error('添加失败请重试！');
+//     return false;
+//   }
+// };
 
 /**
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('正在配置');
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
+// const handleUpdate = async (fields: FormValueType) => {
+//   const hide = message.loading('正在配置');
+//   try {
+//     await updateRule({
+//       name: fields.name,
+//       desc: fields.desc,
+//       key: fields.key,
+//     });
+//     hide();
 
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
+//     message.success('配置成功');
+//     return true;
+//   } catch (error) {
+//     hide();
+//     message.error('配置失败请重试！');
+//     return false;
+//   }
+// };
 
 /**
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableListItem[]) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-  try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
+// const handleRemove = async (selectedRows: TableListItem[]) => {
+//   const hide = message.loading('正在删除');
+//   if (!selectedRows) return true;
+//   try {
+//     await removeRule({
+//       key: selectedRows.map((row) => row.key),
+//     });
+//     hide();
+//     message.success('删除成功，即将刷新');
+//     return true;
+//   } catch (error) {
+//     hide();
+//     message.error('删除失败，请重试');
+//     return false;
+//   }
+// };
+
+const searchFormFields: Array<TableListItem> = [
+  {
+    type: 'datetimeRange',
+    itemName: 'times',
+    label: '日期',
+    placeholder: '日期范围',
+    initialValue: [null, null],
+  },
+];
 
 const TableList: React.FC<{}> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
@@ -80,59 +90,37 @@ const TableList: React.FC<{}> = () => {
   const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
   const columns: ProColumns<TableListItem>[] = [
     {
-      title: '规则名称',
+      title: '姓1名',
       dataIndex: 'name',
-      tip: '规则名称是唯一的 key',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: '规则名称为必填项',
-          },
-        ],
-      },
+      // tip: '规则名称是唯一的 key',
+      // formItemProps: {
+      //   rules: [
+      //     {
+      //       required: fa,
+      //       message: '规则名称为必填项',
+      //     },
+      //   ],
+      // },
       render: (dom, entity) => {
         return <a onClick={() => setRow(entity)}>{dom}</a>;
       },
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
-      valueType: 'textarea',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val} 万`,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      hideInForm: true,
+      title: '审核状态',
+      dataIndex: 'reviewStatus',
+      hideInForm: false,
       valueEnum: {
-        0: { text: '关闭', status: 'Default' },
-        1: { text: '运行中', status: 'Processing' },
-        2: { text: '已上线', status: 'Success' },
-        3: { text: '异常', status: 'Error' },
+        0: { text: '未审核', status: 'notReviewed' },
+        1: { text: '已审核', status: 'reviewed' },
       },
     },
     {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      valueType: 'dateTime',
-      hideInForm: true,
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder="请输入异常原因！" />;
-        }
-        return defaultRender(item);
+      title: '上线状态',
+      dataIndex: 'reviewStatus',
+      hideInForm: false,
+      valueEnum: {
+        0: { text: '上线', status: 'onLine' },
+        1: { text: '虾线', status: 'offLine' },
       },
     },
     {
@@ -156,10 +144,74 @@ const TableList: React.FC<{}> = () => {
     },
   ];
 
+  // updateWorker("create", {
+  //   "realName": "范冰冰1",
+  //   "telephone": "13800138003",
+  //   "identity": "110101199003074098",
+  //   "sex": "woman",
+  //   "language": JSON.stringify(["普通话","粤语"]),
+  //   "age": "18",
+  //   "skillIdList": ["2"],
+  //   // "skillIdList": ["清洗衣物"],
+  //   "hospitalIdList": ["1"]
+  // })
+
+  // updateWorker("update", {
+  //   "serverId": "1603464884538",
+  //   "realName": "范冰冰2",
+  //   "telephone": "13800138003",
+  //   "identity": "110101199003074098",
+  //   "sex": "woman",
+  //   "language": JSON.stringify(["普通话","粤语"]),
+  //   "age": "18",
+  //   "skillIdList": ["2"],
+  //   // "skillIdList": ["清洗衣物"],
+  //   "hospitalIdList": ["1"]
+  // })
+
+  // updateLineStatus, updateReviewed, queryList, queryIncome
+
+  // onLine,offLine
+  // updateLineStatus({
+  //   serverId: "1603464884538",
+  //   onlineStatus: "onLine"
+  // })
+
+  // updateReviewed({
+  //   serverId: "1603464884538",
+  //   reviewed: "reviewed"
+  // })
+
+  // queryList({
+  //   reviewStatus: "reviewed",
+  //   // name: "",
+  //   // onlineStatus: "onLine",
+  //   pageSize: "10",
+  //   pageNum: "1"
+  // })
+
+  // queryIncome({
+  //   startDateTime: "2020-01-12 12:00:00",
+  //   endDateTime: "2020-12-12 12:00:00",
+  //   pageSize: "10",
+  //   pageNum: "1"
+  // })
+  
+  const aaa = (param) => {
+    console.log(param, 8888)
+      // queryList({
+  //   reviewStatus: "reviewed",
+  //   // name: "",
+  //   // onlineStatus: "onLine",
+  //   pageSize: "10",
+  //   pageNum: "1"
+  // })
+  }
+  
   return (
     <PageContainer>
       <ProTable<TableListItem>
-        headerTitle="查询表格1"
+        headerTitle="护工表格"
         actionRef={actionRef}
         rowKey="key"
         search={{
@@ -170,7 +222,7 @@ const TableList: React.FC<{}> = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => aaa({ ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
