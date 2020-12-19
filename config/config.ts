@@ -26,17 +26,17 @@ export default defineConfig({
   },
   // umi routes: https://umijs.org/docs/routing
   routes: [
-    {
-      path: '/user',
-      component: '../layouts/UserLayout',
-      routes: [
-        {
-          name: 'login',
-          path: '/user/login',
-          component: './user/login',
-        },
-      ],
-    },
+    // {
+    //   path: '/user',
+    //   component: '../layouts/UserLayout',
+    //   routes: [
+    //     {
+    //       name: 'login',
+    //       path: '/user/login',
+    //       component: './user/login',
+    //     },
+    //   ],
+    // },
     {
       path: '/',
       component: '../layouts/SecurityLayout',
@@ -48,13 +48,13 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: '/home',
             },
             {
-              path: '/welcome',
-              name: 'welcome',
+              path: '/home',
+              name: 'home',
               icon: 'smile',
-              component: './welcome',
+              component: './Home',
             },
             // {
             //   path: '/admin',
