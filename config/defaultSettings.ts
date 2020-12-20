@@ -16,7 +16,7 @@ const proSettings: DefaultSettings = {
   menu: {
     locale: true,
   },
-  title: 'Ant Design Pro',
+  title: '一键科技',
   pwa: false,
   iconfontUrl: '',
 };
