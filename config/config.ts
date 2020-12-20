@@ -124,4 +124,5 @@ export default defineConfig({
   manifest: {
     basePath: '/',
   },
+  publicPath: '/dist/' 
 });
