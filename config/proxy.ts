@@ -8,7 +8,7 @@
 export default {
   dev: {
     '/api': {
-      target: 'http://120.76.100.17:8888',
+      target: 'https://hugong.chenshengbao.com',
       changeOrigin: true,
       pathRewrite: { '/api': '' },
     },

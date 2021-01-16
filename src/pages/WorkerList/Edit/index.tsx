@@ -1,9 +1,10 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Form, Input, Radio, Select, Button, Checkbox, message as Message, Row, Col } from 'antd';
+import { Form, Input, Radio, Select, Button, Checkbox, message as Message, Row, Col, Upload } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, history } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { history } from 'umi';
+// import ImgCrop from 'antd-img-crop';
+import { UploadOutlined } from '@ant-design/icons';
+// import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+// import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { queryHospital, querySkill, queryWorker, updateWorker } from '../service';
 
 const layout = {
@@ -30,6 +31,8 @@ const Worker: React.FC<{}> = (props) => {
   const [hospitalOptions, setHospitalOptions] = useState<Array<any>>([]) // 服务医院选项
   const [hospitalIdList, setHospitalIdList] = useState<Array<any>>([]) // 护工服务医院列表
   const [workerInfo, setWorkerInfo] = useState({}) // 护工信息
+  const [fileList, setFileList] = useState([]) // 个人照
+  const [introduce, setIntroduce] = useState('') // 个人照
   const isNew = serverId === 'new';
 
   useEffect(() => {
@@ -55,14 +58,24 @@ const Worker: React.FC<{}> = (props) => {
 
   // 反显护工信息
   function resetWorkerInfo(data: any) {
-    const { realName, age, identity, hospitalList, language, sex, skillItemList, telephone } = data;
+    const { realName, age, identity, hospitalList, introduce, language, sex, skillItemList, telephone, fileVoList } = data;
     const workerHospitalList = hospitalList.map((item: any) => item.hospitalId);
     const workerSkillItemList = skillItemList.map((item: any) => item.skillId);
+    const workerFileList = fileVoList.map((item: any, index: number) => {
+      return {
+        uid: index,
+        name: index,
+        url: item.url,
+        thumbUrl: item.url,
+      }
+    });
 
     setWorkerInfo(data);
     setHospitalIdList(workerHospitalList);
     setSkillIdList(workerSkillItemList);
     setLanguage(language);
+    setFileList(workerFileList);
+
 
     workerForm.setFieldsValue({
       realName,
@@ -71,8 +84,10 @@ const Worker: React.FC<{}> = (props) => {
       telephone,
       identity,
       language,
+      introduce,
       hospitalIdList: workerHospitalList,
-      skillItemList: workerSkillItemList
+      skillIdList: workerSkillItemList,
+      fileList: workerFileList
     });
   }
 
@@ -144,7 +159,8 @@ const Worker: React.FC<{}> = (props) => {
       sex,
       language,
       skillIdList,
-      hospitalIdList
+      hospitalIdList,
+      picUrlDtoList: fileList
     };
     if (!isNew) {
       params['serverId'] = workerInfo.serverId;
@@ -164,10 +180,33 @@ const Worker: React.FC<{}> = (props) => {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    Message.error(`注册失败：${JSON.stringify(errorInfo)}`);
   };
 
   const { reviewStatus, onlineStatus, serverNum } = workerInfo;
+  const uploadProps = {
+    name: 'file',
+    action: '/api/upload/pic',
+    fileList,
+    listType: "picture",
+    onChange({ fileList: newFileList }) {
+      setFileList(newFileList.map((item: any) => { return { url: item.response.data } }));
+    },
+    onPreview: async (file) => {
+      let src = file.url;
+      if (!src) {
+        src = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file.originFileObj);
+          reader.onload = () => resolve(reader.result);
+        });
+      }
+      const image = new Image();
+      image.src = src;
+      const imgWindow = window.open(src);
+      imgWindow.document.write(image.outerHTML);
+    }
+  };
 
   return (
     <Form
@@ -179,7 +218,7 @@ const Worker: React.FC<{}> = (props) => {
       onFinishFailed={onFinishFailed}
     >
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="姓名"
             name="realName"
@@ -190,7 +229,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="年龄"
             name="age"
@@ -201,7 +240,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="性别"
             name="sex"
@@ -218,7 +257,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="身份证号"
             name="identity"
@@ -229,7 +268,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="联系电话"
             name="telephone"
@@ -240,7 +279,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="掌握语言"
             name="language"
@@ -251,7 +290,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="护理技能"
             name="skillIdList"
@@ -271,7 +310,7 @@ const Worker: React.FC<{}> = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item
             label="可服务医院"
             name="hospitalIdList"
@@ -290,9 +329,34 @@ const Worker: React.FC<{}> = (props) => {
           </Form.Item>
         </Col>
       </Row>
+      <Row>
+        <Col span={16} >
+          <Form.Item
+            label="个人照片"
+            name="fileList"
+          // required
+          >
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+            <div />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={16} >
+          <Form.Item
+            label="个人介绍"
+            name="introduce"
+          // rules={[{ required: true, message: '请输入个人介绍' }]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+        </Col>
+      </Row>
       {
         !isNew && <React.Fragment><Row>
-          <Col span={12} >
+          <Col span={16} >
             <Form.Item
               label="服务次数"
               name="serverNum"
@@ -302,7 +366,7 @@ const Worker: React.FC<{}> = (props) => {
           </Col>
         </Row>
           <Row>
-            <Col span={12} >
+            <Col span={16} >
               <Form.Item
                 label="在线状态"
                 name="onlineStatus"
@@ -312,7 +376,7 @@ const Worker: React.FC<{}> = (props) => {
             </Col>
           </Row>
           <Row>
-            <Col span={12} >
+            <Col span={16} >
               <Form.Item
                 label="审核状态"
                 name="reviewStatus"
@@ -323,15 +387,8 @@ const Worker: React.FC<{}> = (props) => {
           </Row>
         </React.Fragment>
       }
-      {/* <Row>
-        <Col span={12} >
-          <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-        </Col>
-      </Row> */}
       <Row>
-        <Col span={12} >
+        <Col span={16} >
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
               确定
