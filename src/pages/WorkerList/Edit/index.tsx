@@ -160,7 +160,7 @@ const Worker: React.FC<{}> = (props) => {
       language,
       skillIdList,
       hospitalIdList,
-      picUrlDtoList: fileList
+      picUrlDtoList: fileList.map((item: any) => { return { url: item.response?.data || item.url } })
     };
     if (!isNew) {
       params['serverId'] = workerInfo.serverId;
@@ -189,8 +189,10 @@ const Worker: React.FC<{}> = (props) => {
     action: '/api/upload/pic',
     fileList,
     listType: "picture",
-    onChange({ fileList: newFileList }) {
-      setFileList(newFileList.map((item: any) => { return { url: item.response.data } }));
+    onChange({ file, fileList: newFileList }) {
+      if (file.status === 'done') {
+        setFileList(newFileList);
+      }
     },
     onPreview: async (file) => {
       let src = file.url;
@@ -205,7 +207,10 @@ const Worker: React.FC<{}> = (props) => {
       image.src = src;
       const imgWindow = window.open(src);
       imgWindow.document.write(image.outerHTML);
-    }
+    },
+    onRemove: async (file) => {
+      setFileList(fileList.filter(item => item.url !== file.url));
+    },
   };
 
   return (
@@ -339,7 +344,7 @@ const Worker: React.FC<{}> = (props) => {
             <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
-            <div />
+            {/* <div /> */}
           </Form.Item>
         </Col>
       </Row>
