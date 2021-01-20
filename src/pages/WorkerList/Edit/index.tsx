@@ -32,7 +32,6 @@ const Worker: React.FC<{}> = (props) => {
   const [hospitalIdList, setHospitalIdList] = useState<Array<any>>([]) // 护工服务医院列表
   const [workerInfo, setWorkerInfo] = useState({}) // 护工信息
   const [fileList, setFileList] = useState([]) // 个人照
-  const [introduce, setIntroduce] = useState('') // 个人照
   const isNew = serverId === 'new';
 
   useEffect(() => {
@@ -266,7 +265,7 @@ const Worker: React.FC<{}> = (props) => {
           <Form.Item
             label="身份证号"
             name="identity"
-            rules={[{ required: true, message: '请输入身份证号' }]}
+          // rules={[{ required: true, message: '请输入身份证号' }]}
           >
             <Input />
           </Form.Item>
