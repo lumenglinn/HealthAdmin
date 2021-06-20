@@ -119,7 +119,7 @@ const Welcome: React.FC<{}> = () => {
       pageNum: pageNum || 1
     })
 
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       setIncomeData(data.querySumIncomeSumVo || { outcome: "0", income: "0" })
       return {
         data: data.payFlowVoList,

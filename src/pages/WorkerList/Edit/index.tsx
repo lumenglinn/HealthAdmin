@@ -48,7 +48,7 @@ const Worker: React.FC<{}> = (props) => {
       serverId
     })
 
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       resetWorkerInfo(data)
     } else {
       Message.error(msg);
@@ -96,7 +96,7 @@ const Worker: React.FC<{}> = (props) => {
       city: "湛江市",
       area: "霞山区"
     })
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       const options = data.map((item: any) => {
         return {
           label: item.name,
@@ -112,7 +112,7 @@ const Worker: React.FC<{}> = (props) => {
   // 查询护工技能
   async function querySkillList() {
     const { data, msg, statusCode } = await querySkill();
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       const options = data.map((item: any) => {
         return {
           label: item.itemName,
@@ -165,7 +165,7 @@ const Worker: React.FC<{}> = (props) => {
       params['serverId'] = workerInfo.serverId;
     }
     const { msg, statusCode } = await updateWorker(isNew ? "create" : "update", params);
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       if (isNew) {
         Message.success('新增护工成功');
         history.push('/workerList/all')

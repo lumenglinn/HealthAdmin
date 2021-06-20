@@ -121,7 +121,7 @@ const TableList: React.FC<{}> = () => {
       pageNum: pageNum || 1
     })
 
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       return {
         data: data,
         success: true,
@@ -140,7 +140,7 @@ const TableList: React.FC<{}> = () => {
       reviewStatus: reviewStatus === "reviewed" ? "notReviewed" : "reviewed"
     })
 
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       Message.success('审核成功', 2, actionRef.current.reload);
     } else {
       Message.error(msg);
@@ -155,7 +155,7 @@ const TableList: React.FC<{}> = () => {
       onlineStatus: onlineStatus === "onLine" ? "offLine" : "onLine"
     })
 
-    if (statusCode === '10001') {
+    if (statusCode === '1') {
       Message.success('操作成功', 2, actionRef.current.reload);
     } else {
       Message.error(msg);
