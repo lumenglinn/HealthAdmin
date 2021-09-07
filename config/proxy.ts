@@ -8,16 +8,16 @@
 export default {
   dev: {
     '/api': {
-      // target: 'https://haohugongpro.yukangpeng.com',
-      target: 'https://haohugongtest.yukangpeng.com',
+      target: 'https://haohugongpro.yukangpeng.com',
+      // target: 'https://haohugongtest.yukangpeng.com',
       changeOrigin: true,
       pathRewrite: { '/api': '' },
     },
   },
   test: {
     '/api/': {
-      // target: 'https://haohugongpro.yukangpeng.com',
-      target: 'https://haohugongtest.yukangpeng.com',
+      target: 'https://haohugongpro.yukangpeng.com',
+      // target: 'https://haohugongtest.yukangpeng.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
