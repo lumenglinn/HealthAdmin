@@ -65,7 +65,7 @@ const TableList: React.FC<{}> = () => {
     {
       title: '上架状态',
       dataIndex: 'onlineStatus',
-      render: (d: string) => (`${d === 'onLine' ? "在线" : "下线"}`),
+      // render: (d: string) => (`${d === 'onLine' ? "在线" : `${d}下线`}`),
       initialValue: 'onLine',
       filters: true,
       valueEnum: {
